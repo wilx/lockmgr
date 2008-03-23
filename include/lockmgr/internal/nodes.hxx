@@ -18,6 +18,7 @@ enum node_resource_type
 //! Base/header for both node types.
 struct NodeBase
 {
+  //! Type of node, values from node_resource_type.
   unsigned short type : 1;
 };
 
@@ -59,6 +60,7 @@ union RAGNode
 };
 
 
+//! Accessor for node type.
 inline
 node_resource_type
 get_node_type (RAGNode const & n)

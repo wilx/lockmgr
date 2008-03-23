@@ -1,5 +1,8 @@
+#include <map>
 #include "lockmgr/ilockmgr.hxx"
-#include "lockmgr/internal/nodes.hxx"
+#include "lockmgr/internal/graph.hxx"
+#include "lockmgr/internal/syncprim.hxx"
+
 
 namespace lockmgr
 {
@@ -33,6 +36,24 @@ public:
 protected:
   virtual ~LockManager ();
 
+  //! Type of LockManager's internal synchronization primitive.
+  typedef Mutex lock_type;
+
+  //! Type of guard for LockManager's internal lock.
+  typedef MutexGuard lock_guard;
+
+  //! Type of map mapping nodes to vertex descriptors.
+  typedef std::map<RAGNode, vertex_descr_type> node_to_vertex_map_type;
+
+  //! LockManager's internal lock.
+  lock_type lockmgr_lock;
+
+  //! Resource Allocation Graph.
+  RAG rag;
+
+  //! Mapping from nodes to vertex descriptors.
+  node_to_vertex_map_type node_to_vertex;
+
 private:
   LockManager (LockManager const &);
   LockManager & operator = (LockManager const &);
@@ -64,6 +85,7 @@ LockManager::get_critsec_lockmgr_if ()
 DWORD
 LockManager::crit_lock (HANDLE)
 {
+  lock_guard lg (lockmgr_lock);
   return 0;
 }
 
