@@ -11,8 +11,13 @@ namespace lockmgr
 class LOCKMGR_INTERFACE IMutexLock
 {
 public:
+  //! Method for locking given mutex.
   virtual DWORD mutex_lock (HANDLE) = 0;
+
+  //! Method for unlocking locked mutex.
   virtual DWORD mutex_unlock (HANDLE) = 0;
+
+  //! Method for removing bookkeeping information for given mutex.
   virtual bool mutex_forget (HANDLE) = 0;
 
 protected:

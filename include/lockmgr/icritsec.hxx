@@ -11,8 +11,14 @@ namespace lockmgr
 class LOCKMGR_INTERFACE ICritSectionLock
 {
 public:
+  //! \brief Method for locking given critical section.
   virtual DWORD crit_lock (HANDLE) = 0;
+
+  //! \brief Method for unlocking locked critical section.
   virtual DWORD crit_unlock (HANDLE) = 0;
+
+  //! \brief Method for removing bookkeeping information for given
+  //! critical section.
   virtual bool crit_forget (HANDLE) = 0;
 
 protected:

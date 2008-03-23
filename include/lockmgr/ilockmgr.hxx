@@ -11,7 +11,10 @@ namespace lockmgr
 class LOCKMGR_INTERFACE ILockMgr
 {
 public:
+  //! Method returning interface for locking mutexes.
   virtual IMutexLock * get_mutex_lockmgr_if () = 0;
+
+  //! Method returning interface for locking critical sections.
   virtual ICritSectionLock * get_critsec_lockmgr_if () = 0;
 
 protected:

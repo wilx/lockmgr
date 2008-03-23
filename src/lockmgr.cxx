@@ -1,5 +1,5 @@
 #include "lockmgr/ilockmgr.hxx"
-
+#include "lockmgr/internal/nodes.hxx"
 
 namespace lockmgr
 {
