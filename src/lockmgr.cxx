@@ -25,8 +25,8 @@ public:
   //!@}
 
   //!@{
-  virtual DWORD crit_lock (CRITICAL_SECTION *);
-  virtual DWORD crit_unlock (CRITICAL_SECTION *);
+  virtual void crit_enter (CRITICAL_SECTION *);
+  virtual void crit_leave (CRITICAL_SECTION *);
   virtual bool crit_forget (CRITICAL_SECTION *);
   //!@}
 
@@ -60,19 +60,30 @@ protected:
   //! \Returns Returns RAGNode representing the calling thread.
   static RAGNode this_thread_node ();
 
+  //! \Returns Returns RAGNode for given resource.
+  static RAGNode resource_node (generic_syncprim_type);
+
   //! \Returns Returns existing or inserts new vertex given RAGNode.
   vertex_descr_type find_or_insert_vertex (RAGNode const &);
 
-  //!
+  //! \Returns Returns existing vertex given RAGNode.
+  vertex_descr_type find_vertex (RAGNode const &) const;
+
+  //! \brief Call this method in your foo_lock() method before any
+  //! attempt to acquire your resource.
   void prepare_locking (generic_syncprim_type prim, vertex_descr_type * tv, 
 			vertex_descr_type * rv, edge_descr_type * edge);
 
-  //!
+  //! \brief Call this method in your foo_lock() method after you have
+  //! locked/acquired your resource.
   void finish_locking (vertex_descr_type tv, vertex_descr_type rv,
 		       edge_descr_type edge);
 
+  //! \brief Call this method in your foo_unlock () method after your
+  //! resource has been released.
+  void finish_unlocking (generic_syncprim_type prim);
 
-  //! LockManager's internal lock. It protects all access from public
+  //! \brief LockManager's internal lock. It protects all access from public
   //! interface.
   lock_type lockmgr_lock;
 
@@ -115,8 +126,8 @@ LockManager::get_critsec_lockmgr_if ()
 }
 
 
-DWORD
-LockManager::crit_lock (CRITICAL_SECTION * cs)
+void
+LockManager::crit_enter (CRITICAL_SECTION * cs)
 {
   vertex_descr_type tv, rv;
   edge_descr_type edge;
@@ -129,22 +140,23 @@ LockManager::crit_lock (CRITICAL_SECTION * cs)
 
   // Record the newly acquired resource.
   finish_locking (tv, rv, edge);
-
-  return 0;
 }
 
 
-DWORD
-LockManager::crit_unlock (CRITICAL_SECTION *)
+void
+LockManager::crit_leave (CRITICAL_SECTION * cs)
 {
-  return 0;
+  ::LeaveCriticalSection (cs);
+
+  // Remove the resource -> thread node as the resource has been released.
+  finish_unlocking (cs);
 }
 
 
-bool
-LockManager::crit_forget (CRITICAL_SECTION *)
+void
+LockManager::crit_forget (CRITICAL_SECTION * cs)
 {
-  return 0;
+  forget_node (cs);
 }
 
 
@@ -179,6 +191,16 @@ LockManager::this_thread_node ()
 }
 
 
+RAGNode 
+LockManager::resource_node (generic_syncprim_type prim)
+{
+  ResourceNode res_node;
+  init_resource_node (res_node, prim);
+  RAGNode rag_res_node (res_node);
+  return rag_res_node;
+}
+
+
 vertex_descr_type 
 LockManager::find_or_insert_vertex (RAGNode const & node)
 {
@@ -199,18 +221,25 @@ LockManager::find_or_insert_vertex (RAGNode const & node)
 }
 
 
-//! \brief Call this method in your foo_lock() method before any
-//! attempt to acquire your resource.
+vertex_descr_type 
+LockManager::find_vertex (RAGNode const & node) const
+{
+  node_to_vertex_map_type::const_iterator it = node_to_vertex.find (node);
+  if (it == node_to_vertex.end ())
+    throw "Unknown node.";
+  else
+    return it->second;
+}
+
+
 void 
 LockManager::prepare_locking (generic_syncprim_type prim,
 			      vertex_descr_type * tv,
 			      vertex_descr_type * rv,
 			      edge_descr_type * edge)
 {
-  RAGNode rag_thread_node (this_thread_node ());
-  ResourceNode res_node;
-  init_resource_node (res_node, prim);
-  RAGNode rag_res_node (res_node);
+  RAGNode const & rag_thread_node (this_thread_node ());
+  RAGNode const & rag_res_node (resource_node (prim));
 
   lock_guard lg (lockmgr_lock);
 
@@ -229,8 +258,6 @@ LockManager::prepare_locking (generic_syncprim_type prim,
 }
 
 
-//! \brief Call this method in your foo_lock() method after you have
-//! locked/acquired your resource.
 void 
 LockManager::finish_locking (vertex_descr_type tv, vertex_descr_type rv,
 			     edge_descr_type edge)
@@ -242,6 +269,23 @@ LockManager::finish_locking (vertex_descr_type tv, vertex_descr_type rv,
 
   // Add new edge resource -> thread for acquired resouce.
   boost::add_edge (rv, tv, rag);
+}
+
+
+void 
+LockManager::finish_unlocking (generic_syncprim_type prim)
+{
+  vertex_descr_type tv, rv;
+  RAGNode const & thread_node (this_thread_node ());
+  RAGNode const & res_node (resource_node (prim));
+
+  lock_guard lg (lockmgr_lock);
+
+  tv = find_vertex (thread_node);
+  rv = find_vertex (res_node);
+
+  // Remove the resource -> thread edge because the resource has been freed.
+  boost::remove_edge (rv, tv, rag);
 }
 
 
