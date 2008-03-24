@@ -19,7 +19,7 @@ public:
 
   //! \brief Method for removing bookkeeping information for given
   //! critical section.
-  virtual bool crit_forget (CRITICAL_SECTION *) = 0;
+  virtual void crit_forget (CRITICAL_SECTION *) = 0;
 
 protected:
   virtual ~ICritSectionLock () = 0;

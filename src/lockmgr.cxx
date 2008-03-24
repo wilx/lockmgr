@@ -22,12 +22,13 @@ public:
   //!@{
   virtual IMutexLock * get_mutex_lockmgr_if ();
   virtual ICritSectionLock * get_critsec_lockmgr_if ();
+  virtual void forget_this_thread ();
   //!@}
 
   //!@{
   virtual void crit_enter (CRITICAL_SECTION *);
   virtual void crit_leave (CRITICAL_SECTION *);
-  virtual bool crit_forget (CRITICAL_SECTION *);
+  virtual void crit_forget (CRITICAL_SECTION *);
   //!@}
 
   //!@{
@@ -60,6 +61,9 @@ protected:
   //! \Returns Returns RAGNode representing the calling thread.
   static RAGNode this_thread_node ();
 
+  //! \Returns Returns RAGNode representing given thread.
+  static RAGNode thread_node (thread_id_type);
+
   //! \Returns Returns RAGNode for given resource.
   static RAGNode resource_node (generic_syncprim_type);
 
@@ -82,6 +86,13 @@ protected:
   //! \brief Call this method in your foo_unlock () method after your
   //! resource has been released.
   void finish_unlocking (generic_syncprim_type prim);
+
+  //! \brief Clean up for a resource that is going to be removed from the
+  //! system.
+  void forget_resource (generic_syncprim_type prim);
+
+  //! \brief Clean up for thread that is going to end.
+  void forget_thread (thread_id_type tid);
 
   //! \brief LockManager's internal lock. It protects all access from public
   //! interface.
@@ -126,6 +137,13 @@ LockManager::get_critsec_lockmgr_if ()
 }
 
 
+void 
+LockManager::forget_this_thread ()
+{
+  forget_thread (get_this_thread_id ());
+}
+
+
 void
 LockManager::crit_enter (CRITICAL_SECTION * cs)
 {
@@ -146,17 +164,17 @@ LockManager::crit_enter (CRITICAL_SECTION * cs)
 void
 LockManager::crit_leave (CRITICAL_SECTION * cs)
 {
-  ::LeaveCriticalSection (cs);
-
-  // Remove the resource -> thread node as the resource has been released.
+  // Remove the resource -> thread edge as the resource will be released.
   finish_unlocking (cs);
+
+  ::LeaveCriticalSection (cs);
 }
 
 
 void
 LockManager::crit_forget (CRITICAL_SECTION * cs)
 {
-  forget_node (cs);
+  forget_resource (cs);
 }
 
 
@@ -184,8 +202,15 @@ LockManager::mutex_forget (HANDLE)
 RAGNode
 LockManager::this_thread_node ()
 {
+  return thread_node (get_this_thread_id ());
+}
+
+
+RAGNode
+LockManager::thread_node (thread_id_type tid)
+{
   ThreadNode tn;
-  init_thread_node (tn, get_this_thread_id ());
+  init_thread_node (tn, tid);
   RAGNode node (tn);
   return node;
 }
@@ -286,6 +311,32 @@ LockManager::finish_unlocking (generic_syncprim_type prim)
 
   // Remove the resource -> thread edge because the resource has been freed.
   boost::remove_edge (rv, tv, rag);
+}
+
+  
+void 
+LockManager::forget_resource (generic_syncprim_type prim)
+{
+  vertex_descr_type rv;
+  RAGNode const & res_node (resource_node (prim));
+
+  lock_guard lg (lockmgr_lock);
+  
+  rv = find_vertex (res_node);
+  boost::remove_vertex (rv, rag);
+}
+
+
+void 
+LockManager::forget_thread (thread_id_type tid)
+{
+  vertex_descr_type tv;
+  RAGNode const & rag_thread_node (thread_node (tid));
+
+  lock_guard lg (lockmgr_lock);
+  
+  tv = find_vertex (rag_thread_node);
+  boost::remove_vertex (tv, rag);
 }
 
 
