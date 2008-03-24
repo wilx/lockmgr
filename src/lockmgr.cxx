@@ -149,6 +149,27 @@ LockManager::finish_locking (vertex_descr_type tv, vertex_descr_type rv,
 
 
 void 
+LockManager::abandon_locking (edge_descr_type edge)
+{
+  lock_guard lg (lockmgr_lock);
+
+  // Remove the thread -> resource edge add in prepare_locking().
+  boost::remove_edge (edge, rag);
+}
+
+
+void 
+LockManager::abandon_locking (generic_syncprim_type prim)
+{
+  lock_guard lg (lockmgr_lock);
+
+  // Forget the resource completely if it is requested.
+  forget_resource (prim);
+}
+
+
+
+void 
 LockManager::finish_unlocking (generic_syncprim_type prim)
 {
   vertex_descr_type tv, rv;

@@ -1,4 +1,5 @@
 #include "lockmgr/internal/lockmgr.hxx"
+#include "lockmgr/internal/windows.h"
 
 
 namespace lockmgr

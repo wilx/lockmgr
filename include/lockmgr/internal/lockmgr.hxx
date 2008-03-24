@@ -10,7 +10,11 @@
 namespace lockmgr
 {
 
-//! Lock manager.
+//! \todo The value of HANLDE (for mutex) comes from the kernel
+//! address space, and the value of CRITICAL_SECTION * comes from user
+//! address space. Theoretically, there could be a HANDLE with value
+//! equal to CRITICAL_SECTION *, how do we deal with it?  Lock
+//! manager.
 class LockManager
   : public virtual ILockMgr
   , public virtual ICritSectionLock
@@ -34,7 +38,7 @@ public:
   //!@{
   virtual DWORD mutex_lock (HANDLE);
   virtual DWORD mutex_unlock (HANDLE);
-  virtual bool mutex_forget (HANDLE);
+  virtual void mutex_forget (HANDLE);
   //!@}
 
 protected:
@@ -72,6 +76,14 @@ protected:
   //! locked/acquired your resource.
   void finish_locking (vertex_descr_type tv, vertex_descr_type rv,
 		       edge_descr_type edge);
+
+  //! \bried Call this method in your foo_lock() method if your
+  //! resource acquisition fails. It will clean up LockManager's
+  //! internal bookkeeping.
+  //!@{
+  void abandon_locking (edge_descr_type edge);
+  void abandon_locking (generic_syncprim_type prim);
+  //!@}
 
   //! \brief Call this method in your foo_unlock () method after your
   //! resource has been released.

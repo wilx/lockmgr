@@ -18,7 +18,7 @@ public:
   virtual DWORD mutex_unlock (HANDLE) = 0;
 
   //! Method for removing bookkeeping information for given mutex.
-  virtual bool mutex_forget (HANDLE) = 0;
+  virtual void mutex_forget (HANDLE) = 0;
 
 protected:
   virtual ~IMutexLock () = 0;

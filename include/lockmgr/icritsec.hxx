@@ -1,7 +1,7 @@
 #if ! defined (LOCKMANAGER_LOCKMGR_ICRITSEC_HXX)
 #define LOCKMANAGER_LOCKMGR_ICRITSEC_HXX
 
-#include "lockmgr/internal/windows.h"
+#include <windows.h>
 #include "lockmgr/dlldef.hxx"
 
 namespace lockmgr
