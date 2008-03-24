@@ -116,7 +116,7 @@ public:
 
     void unlock ()
     {
-	asset (m_prim);
+	assert (m_prim);
 	m_prim->unlock ();
     }
     

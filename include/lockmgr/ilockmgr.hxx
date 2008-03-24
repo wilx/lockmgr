@@ -1,6 +1,7 @@
 #if ! defined (LOCKMANAGER_LOCKMGR_ILOCKMGR_HXX)
 #define LOCKMANAGER_LOCKMGR_ILOCKMGR_HXX
 
+#include <stdexcept>
 #include "lockmgr/icritsec.hxx"
 #include "lockmgr/imutex.hxx"
 
@@ -19,6 +20,15 @@ public:
 
 protected:
   virtual ~ILockMgr () = 0;
+};
+
+
+//! Exception thrown if DFS finds cycle in Resource Allocation Graph.
+struct LOCKMGR_INTERFACE cycle_found_exception
+  : public std::runtime_error
+{
+public:
+  cycle_found_exception ();
 };
 
 } // namespace lockmgr
