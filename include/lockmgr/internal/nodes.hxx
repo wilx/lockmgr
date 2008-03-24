@@ -72,13 +72,16 @@ init_thread_node (ThreadNode & tn, thread_id_type tid)
 //! ThreadNode.
 union RAGNode
 {
+  //! Default ctor.
   RAGNode ()
   { }
 
+  //! Constructs RAGNode from ResourceNode.
   RAGNode (ResourceNode const & rn)
     : res (rn)
   { }
 
+  //! Constructs RAGNode from ThreadNode.
   RAGNode (ThreadNode const & tn)
     : thread (tn)
   { }

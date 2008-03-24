@@ -58,7 +58,7 @@ protected:
 
 
   //! \Returns Returns RAGNode representing the calling thread.
-  RAGNode this_thread_node () const;
+  static RAGNode this_thread_node ();
 
   //! \Returns Returns existing or inserts new vertex given RAGNode.
   vertex_descr_type find_or_insert_vertex (RAGNode const &);
@@ -170,7 +170,7 @@ LockManager::mutex_forget (HANDLE)
 
 
 RAGNode
-LockManager::this_thread_node () const
+LockManager::this_thread_node ()
 {
   ThreadNode tn;
   init_thread_node (tn, get_this_thread_id ());
@@ -199,7 +199,8 @@ LockManager::find_or_insert_vertex (RAGNode const & node)
 }
 
 
-//!
+//! \brief Call this method in your foo_lock() method before any
+//! attempt to acquire your resource.
 void 
 LockManager::prepare_locking (generic_syncprim_type prim,
 			      vertex_descr_type * tv,
@@ -228,7 +229,8 @@ LockManager::prepare_locking (generic_syncprim_type prim,
 }
 
 
-//!
+//! \brief Call this method in your foo_lock() method after you have
+//! locked/acquired your resource.
 void 
 LockManager::finish_locking (vertex_descr_type tv, vertex_descr_type rv,
 			     edge_descr_type edge)
@@ -243,7 +245,7 @@ LockManager::finish_locking (vertex_descr_type tv, vertex_descr_type rv,
 }
 
 
-  //
+//! Ctor.
 cycle_found_exception::cycle_found_exception ()
   : std::runtime_error ("cycle_found_exception")
 { }
