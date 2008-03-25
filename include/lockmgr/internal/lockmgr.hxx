@@ -22,6 +22,7 @@ class LockManager
 {
 public:
   LockManager ();
+  virtual ~LockManager ();
 
   //!@{
   virtual IMutexLock * get_mutex_lockmgr_if ();
@@ -77,11 +78,15 @@ protected:
   void finish_locking (vertex_descr_type tv, vertex_descr_type rv,
 		       edge_descr_type edge);
 
-  //! \bried Call this method in your foo_lock() method if your
+  //!@{
+  //! \brief Call this method in your foo_lock() method if your
   //! resource acquisition fails. It will clean up LockManager's
   //! internal bookkeeping.
-  //!@{
   void abandon_locking (edge_descr_type edge);
+
+  //! \brief Call this method in your foo_lock() method if your
+  //! resource acquisition fails. It will clean up LockManager's
+  //! internal bookkeeping.
   void abandon_locking (generic_syncprim_type prim);
   //!@}
 
@@ -106,11 +111,6 @@ protected:
 
   //! Mapping from nodes to vertex descriptors.
   node_to_vertex_map_type node_to_vertex;
-
-
-  //! Dtor. We don't want it public, so that LockManager is not too
-  //! easily destroyable.
-  virtual ~LockManager ();
 
 private:
   LockManager (LockManager const &);
