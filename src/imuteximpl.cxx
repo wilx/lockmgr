@@ -13,7 +13,7 @@ LockManager::mutex_lock (HANDLE mutex)
   edge_descr_type edge;
 
   // Check for deadlocks before attempt for actual lock.
-  prepare_locking (mutex, &tv, &rv, &edge);
+  prepare_locking (generic_syncprim_type (mutex, eKernel), &tv, &rv, &edge);
 
   // Lock the actual resource.
   DWORD ret = ::WaitForSingleObject (mutex, INFINITE);
@@ -27,7 +27,7 @@ LockManager::mutex_lock (HANDLE mutex)
 
     case WAIT_ABANDONED:
       // Completely remove the mutex from resource allocation graph.
-      abandon_locking (mutex);
+      abandon_locking (generic_syncprim_type (mutex, eKernel));
       return ret;
 
     case WAIT_TIMEOUT:
@@ -48,7 +48,7 @@ LockManager::mutex_unlock (HANDLE mutex)
 {
   DWORD ret = ::ReleaseMutex (mutex);
 
-  finish_unlocking (mutex);
+  finish_unlocking (generic_syncprim_type (mutex, eKernel));
 
   return ret;
 }
@@ -57,7 +57,7 @@ LockManager::mutex_unlock (HANDLE mutex)
 void
 LockManager::mutex_forget (HANDLE mutex)
 {
-  forget_resource (mutex);
+  forget_resource (generic_syncprim_type (mutex, eKernel));
 }
 
 } // namespace lockmgr

@@ -30,11 +30,12 @@ RAG;
 //! Type of vertex descriptor of Resource Allocation Graph.
 typedef boost::graph_traits<RAG>::vertex_descriptor vertex_descr_type;
 
+
 //! Type of edge descriptor of Resource Allocation Graph.
 typedef boost::graph_traits<RAG>::edge_descriptor edge_descr_type;
 
 
-//!
+//! Colour map used by DFS on RAG.
 struct RAGColorMap
   : public boost::read_write_property_map_archetype<vertex_descr_type,
 						    boost::default_color_type>
@@ -46,28 +47,66 @@ struct RAGColorMap
   RAG & rag;
 };
 
+
+//! \brief Helper for the put() function of property_map interface of
+//! lockmgr::RAGColorMap.
+struct RAGNodeSetColorVisitor
+  : public boost::static_visitor<void>
+{
+  RAGNodeSetColorVisitor (RAGColorMap::value_type c)
+    : color (c)
+  { }
+
+  result_type 
+  operator () (NodeBase & node) const
+  {
+    node.color = color;
+  }
+  
+  RAGColorMap::value_type const color;
+};
+
+
+//! \brief Helper for the get() function of property_map interface of
+//! lockmgr::RAGColorMap.
+struct RAGNodeGetColorVisitor
+  : public boost::static_visitor<RAGColorMap::value_type>
+{
+  result_type 
+  operator () (NodeBase const & node) const
+  {
+    return static_cast<result_type>(node.color);
+  }
+};
+
+
 } // namespace lockmgr
 
 namespace boost
 {
 
+//! \brief Put() function for property_map interface of
+//! lockmgr::RAGColorMap.
 inline 
 void
 put (lockmgr::RAGColorMap & map, lockmgr::RAGColorMap::key_type vertex,
      lockmgr::RAGColorMap::value_type color)
 {
   lockmgr::RAGNode node (get (vertex_name, map.rag, vertex));
-  node.base.color = color;
+  apply_visitor (lockmgr::RAGNodeSetColorVisitor (color), node);
   put (vertex_name, map.rag, vertex, node);
 }
 
 
+//! \brief Get() function for property_map interface of
+//! lockmgr::RAGColorMap.
 inline
 lockmgr::RAGColorMap::value_type
 get (lockmgr::RAGColorMap const & map, lockmgr::RAGColorMap::key_type vertex)
 {
+  lockmgr::RAGNode const & node = get (vertex_name, map.rag, vertex);
   return static_cast<lockmgr::RAGColorMap::value_type>
-    (get (vertex_name, map.rag, vertex).base.color);
+    (apply_visitor (lockmgr::RAGNodeGetColorVisitor (), node));
 }
 
 } // namespace boost

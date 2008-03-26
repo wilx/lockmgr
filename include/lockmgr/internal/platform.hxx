@@ -10,15 +10,52 @@ namespace lockmgr
 //! \brief Typedef for thread ID stored in ThreadNode.
 typedef DWORD thread_id_type;
 
-//! "Less than" functor for thread_id_type.
+
+//! \brief "Less than" functor for thread_id_type.
 typedef std::less<thread_id_type> thread_id_lt;
 
+
+//! \brief Enum specifiying distinct categories of values of
+//! primitives/resources stored in \c generic_sync_prim_type.
+enum land_of_resource_type
+  {
+    eUserland,
+    eKernel
+  };
+
+  
 //! \brief Typedef for common synchronization primitive type stored in
-//! ResourceNode.
-typedef void * generic_syncprim_type;
+//! ResourceNode.  \detail It is a wrapped structure because we need
+//! to distinguish between values coming from user land and kernel.
+struct generic_syncprim_type
+{
+  generic_syncprim_type ()
+    : val (0)
+  { }
+
+  generic_syncprim_type (void * v, land_of_resource_type c)
+    : val (v), cat (c)
+  { }
+
+  bool
+  operator < (generic_syncprim_type const & other) const
+  {
+    if (val < other.val)
+      return true;
+    else if (val == other.val)
+      return cat < other.cat;
+    else
+      return false;
+  }
+
+  void * val;
+  land_of_resource_type cat;
+};
+
 
 //! "Less than" functor for generic_syncprim_type.
 typedef std::less<generic_syncprim_type> generic_syncprim_lt;
+
 
 //! Returns thread ID of calling thread.
 inline

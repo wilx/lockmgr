@@ -18,7 +18,7 @@ struct dfs_visitor
     throw cycle_found_exception ();
   }
 };
-  
+
 } // namespace
 
 LockManager::LockManager ()
@@ -60,8 +60,7 @@ LockManager::this_thread_node ()
 RAGNode
 LockManager::thread_node (thread_id_type tid)
 {
-  ThreadNode tn;
-  init_thread_node (tn, tid);
+  ThreadNode tn (tid);
   RAGNode node (tn);
   return node;
 }
@@ -70,8 +69,7 @@ LockManager::thread_node (thread_id_type tid)
 RAGNode 
 LockManager::resource_node (generic_syncprim_type prim)
 {
-  ResourceNode res_node;
-  init_resource_node (res_node, prim);
+  ResourceNode res_node (prim);
   RAGNode rag_res_node (res_node);
   return rag_res_node;
 }
@@ -81,7 +79,7 @@ vertex_descr_type
 LockManager::find_or_insert_vertex (RAGNode const & node)
 {
   vertex_descr_type v;
-
+  
   std::pair<node_to_vertex_map_type::iterator, bool> insert_res
     = node_to_vertex.insert 
     (std::make_pair (node, vertex_descr_type ()));

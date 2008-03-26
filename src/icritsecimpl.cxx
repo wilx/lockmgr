@@ -12,7 +12,7 @@ LockManager::crit_enter (CRITICAL_SECTION * cs)
   edge_descr_type edge;
 
   // Check for deadlocks before attempt for actual lock.
-  prepare_locking (cs, &tv, &rv, &edge);
+  prepare_locking (generic_syncprim_type (cs, eUserland), &tv, &rv, &edge);
 
   // Lock the actual resource.
   ::EnterCriticalSection (cs);
@@ -26,7 +26,7 @@ void
 LockManager::crit_leave (CRITICAL_SECTION * cs)
 {
   // Remove the resource -> thread edge as the resource will be released.
-  finish_unlocking (cs);
+  finish_unlocking (generic_syncprim_type (cs, eUserland));
 
   ::LeaveCriticalSection (cs);
 }
@@ -35,7 +35,7 @@ LockManager::crit_leave (CRITICAL_SECTION * cs)
 void
 LockManager::crit_forget (CRITICAL_SECTION * cs)
 {
-  forget_resource (cs);
+  forget_resource (generic_syncprim_type (cs, eUserland));
 }
 
 } // namespace lockmgr
