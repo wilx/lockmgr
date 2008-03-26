@@ -25,18 +25,21 @@ enum land_of_resource_type
 
   
 //! \brief Typedef for common synchronization primitive type stored in
-//! ResourceNode.  \detail It is a wrapped structure because we need
-//! to distinguish between values coming from user land and kernel.
+//! ResourceNode.  It is a wrapped structure because we need to
+//! distinguish between values coming from user land and kernel.
 struct generic_syncprim_type
 {
+  //! Default ctor.
   generic_syncprim_type ()
     : val (0)
   { }
 
+  //! Ctor from pointer and category.
   generic_syncprim_type (void * v, land_of_resource_type c)
     : val (v), cat (c)
   { }
 
+  //! Operator less than.
   bool
   operator < (generic_syncprim_type const & other) const
   {
@@ -48,7 +51,11 @@ struct generic_syncprim_type
       return false;
   }
 
+  //! \brief Value of resource/primitive; mutex handle or pointer to
+  //! CRITICAL_SECTION.
   void * val;
+
+  //! \brief Category of the value; eUserland or eKernel.
   land_of_resource_type cat;
 };
 

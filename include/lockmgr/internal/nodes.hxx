@@ -16,17 +16,19 @@ struct NodeBase
 };
 
 
-//! ResourceNode represents resource in Resource Allocation Graph (RAG).
+//! ResourceNode represents resource in resource allocation graph (RAG).
 struct ResourceNode
   : public NodeBase
 {
   ResourceNode ()
   { }
 
+  //! Constructs ResourceNode from primitive.
   ResourceNode (generic_syncprim_type p)
     : prim (p)
   { }
 
+  //! Less than operator.
   bool
   operator < (ResourceNode const & other) const
   {
@@ -38,17 +40,19 @@ struct ResourceNode
 };
 
 
-//! ThreadNode represents thread in Resource Allocation Graph (RAG).
+//! ThreadNode represents thread in resource allocation graph (RAG).
 struct ThreadNode
   : public NodeBase
 {
   ThreadNode ()
   { }
 
+  //! Creates ThreadNode from thread ID.
   ThreadNode (thread_id_type tid)
     : thread_id (tid)
   { }
   
+  //! Less than operator.
   bool
   operator < (ThreadNode const & other) const
   {

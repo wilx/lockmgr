@@ -10,11 +10,10 @@
 namespace lockmgr
 {
 
-//! \todo The value of HANLDE (for mutex) comes from the kernel
-//! address space, and the value of CRITICAL_SECTION * comes from user
-//! address space. Theoretically, there could be a HANDLE with value
-//! equal to CRITICAL_SECTION *, how do we deal with it?  Lock
-//! manager.
+//! \brief LockManager implements interfaces for locking/acquiring
+//! various resources without getting into deadlock.  Deadlock
+//! situation is detected by using resource allocation graph and
+//! finding cycles in it.
 class LockManager
   : public virtual ILockMgr
   , public virtual ICritSectionLock

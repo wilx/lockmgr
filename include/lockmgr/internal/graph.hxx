@@ -40,10 +40,12 @@ struct RAGColorMap
   : public boost::read_write_property_map_archetype<vertex_descr_type,
 						    boost::default_color_type>
 {
+  //! Constructs RAGColorMap for given RAG.
   RAGColorMap (RAG & g)
     : rag (g)
   { }
 
+  //! Reference to resource allocation graph.
   RAG & rag;
 };
 
@@ -53,16 +55,19 @@ struct RAGColorMap
 struct RAGNodeSetColorVisitor
   : public boost::static_visitor<void>
 {
+  //! \param c Colour to be set.
   RAGNodeSetColorVisitor (RAGColorMap::value_type c)
     : color (c)
   { }
 
+  //! Function call operator that sets colour to node.
   result_type 
   operator () (NodeBase & node) const
   {
     node.color = color;
   }
   
+  //! Colour to be set on visited node.
   RAGColorMap::value_type const color;
 };
 
@@ -72,6 +77,7 @@ struct RAGNodeSetColorVisitor
 struct RAGNodeGetColorVisitor
   : public boost::static_visitor<RAGColorMap::value_type>
 {
+  //! Function call operator that returns colour of give node.
   result_type 
   operator () (NodeBase const & node) const
   {
