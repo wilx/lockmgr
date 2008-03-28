@@ -29,6 +29,8 @@ LockManager::~LockManager ()
 { }
 
 
+#if defined (WIN32) || defined (__CYGWIN__)
+
 IMutexLock *
 LockManager::get_mutex_lockmgr_if ()
 {
@@ -42,6 +44,10 @@ LockManager::get_critsec_lockmgr_if ()
   return dynamic_cast<ICritSectionLock *>(this);
 }
 
+#endif // defined (WIN32) || defined (__CYGWIN__)
+
+
+#if defined (LOCKMANAGER_UNIX)
 
 IPthreadMutexLock * 
 LockManager::get_pthread_mutex_lockmgr_if ()
@@ -49,6 +55,7 @@ LockManager::get_pthread_mutex_lockmgr_if ()
   return dynamic_cast<IPthreadMutexLock *>(this);
 }
 
+#endif // defined (LOCKMANAGER_UNIX)
 
 void 
 LockManager::forget_this_thread ()

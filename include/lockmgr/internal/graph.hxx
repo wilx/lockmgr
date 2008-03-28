@@ -1,7 +1,6 @@
 #if ! defined (LOCKMANAGER_LOCKMGR_INTERNAL_GRAPH_HXX)
 #define LOCKMANAGER_LOCKMGR_INTERNAL_GRAPH_HXX
 
-#include "lockmgr/internal/windows.h"
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/properties.hpp>
 #include "lockmgr/internal/nodes.hxx"
