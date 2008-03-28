@@ -10,10 +10,11 @@ LINK_DIRECTORIES (${Boost_LIBRARY_DIRS})
 # The lockmgr library specification.
 #
 
+FILE (GLOB_RECURSE lockmgr_headers include/*.hxx)
 FILE (GLOB lockmgr_sources src/*.cxx)
-MESSAGE (STATUS "Source files: ${lockmgr_sources}")
+MESSAGE (STATUS "Source files: ${lockmgr_sources} ${lockmgr_headers}")
 
-ADD_LIBRARY (lockmgr SHARED ${lockmgr_sources})
+ADD_LIBRARY (lockmgr SHARED ${lockmgr_sources} ${lockmgr_headers})
 SET_TARGET_PROPERTIES (lockmgr PROPERTIES
   VERSION "1"
   SOVERSION "1")

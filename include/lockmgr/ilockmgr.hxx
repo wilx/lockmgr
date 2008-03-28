@@ -2,8 +2,16 @@
 #define LOCKMANAGER_LOCKMGR_ILOCKMGR_HXX
 
 #include <stdexcept>
-#include "lockmgr/icritsec.hxx"
-#include "lockmgr/imutex.hxx"
+#include "lockmgr/config.hxx"
+
+#if defined (WIN32)
+#  include "lockmgr/icritsec.hxx"
+#  include "lockmgr/imutex.hxx"
+#endif
+
+#if defined (LOCKMANAGER_UNIX)
+#  include "lockmgr/ipthreadmutex.hxx"
+#endif
 
 
 namespace lockmgr
@@ -13,11 +21,23 @@ namespace lockmgr
 class LOCKMGR_INTERFACE ILockMgr
 {
 public:
+
+#if defined (WIN32)
+
   //! \brief Method returning interface for locking mutexes.
   virtual IMutexLock * get_mutex_lockmgr_if () = 0;
 
   //! \brief Method returning interface for locking critical sections.
   virtual ICritSectionLock * get_critsec_lockmgr_if () = 0;
+
+#endif // defined (WIN32)
+
+#if defined (LOCKMANAGER_UNIX)
+
+  //! \brief Method returning interface for locking Pthread mutexes.
+  virtual IPthreadMutexLock * get_pthread_mutex_lockmgr_if () = 0;
+
+#endif // defined (LOCKMANAGER_UNIX)
 
   //! \brief Removes calling thread from resource allocation
   //! graph. Call this method only if the thread is going to end.

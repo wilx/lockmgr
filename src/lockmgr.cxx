@@ -43,6 +43,13 @@ LockManager::get_critsec_lockmgr_if ()
 }
 
 
+IPthreadMutexLock * 
+LockManager::get_pthread_mutex_lockmgr_if ()
+{
+  return dynamic_cast<IPthreadMutexLock *>(this);
+}
+
+
 void 
 LockManager::forget_this_thread ()
 {

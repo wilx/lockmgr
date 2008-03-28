@@ -6,6 +6,15 @@
 #include "lockmgr/internal/graph.hxx"
 #include "lockmgr/internal/syncprim.hxx"
 
+#if defined (WIN32)
+#  include "lockmgr/icritsec.hxx"
+#  include "lockmgr/imutex.hxx"
+#endif
+
+#if defined (LOCKMANAGER_UNIX)
+#  include "lockmgr/ipthreadmutex.hxx"
+#endif
+
 
 namespace lockmgr
 {
@@ -16,18 +25,43 @@ namespace lockmgr
 //! finding cycles in it.
 class LockManager
   : public virtual ILockMgr
+
+#if defined (WIN32)
+
   , public virtual ICritSectionLock
   , public virtual IMutexLock
+
+#endif
+
+#if defined (LOCKMANAGER_UNIX)
+
+  , public virtual IPthreadMutexLock
+
+#endif
+
 {
 public:
   LockManager ();
   virtual ~LockManager ();
 
   //!@{
+#if defined (WIN32)
+
   virtual IMutexLock * get_mutex_lockmgr_if ();
   virtual ICritSectionLock * get_critsec_lockmgr_if ();
+
+#endif // defined (WIN32)
+
+#if defined (LOCKMANAGER_UNIX)
+
+  virtual IPthreadMutexLock * get_pthread_mutex_lockmgr_if ();
+
+#endif // defined (LOCKMANAGER_UNIX)
+
   virtual void forget_this_thread ();
   //!@}
+
+#if defined (WIN32)
 
   //!@{
   virtual void crit_enter (CRITICAL_SECTION *);
@@ -41,12 +75,36 @@ public:
   virtual void mutex_forget (HANDLE);
   //!@}
 
+#endif // defined (WIN32)
+
+#if defined (LOCKMANAGER_UNIX)
+
+  //!@{
+  virtual int pthread_mutex_lock (pthread_mutex_t *);
+  virtual int pthread_mutex_unlock (pthread_mutex_t *);
+  virtual void pthread_mutex_forget (pthread_mutex_t *);
+  //!@}
+
+#endif // defined (LOCKMANAGER_UNIX)
+
 protected:
+#if defined (WIN32)
+
   //! Type of LockManager's internal synchronization primitive.
   typedef Mutex lock_type;
 
   //! Type of guard for LockManager's internal lock.
   typedef MutexGuard lock_guard;
+
+#elif defined (LOCKMANAGER_UNIX)
+
+  //! Type of LockManager's internal synchronization primitive.
+  typedef PthreadMutex lock_type;
+
+  //! Type of guard for LockManager's internal lock.
+  typedef PthreadMutexGuard lock_guard;
+
+#endif
 
   //! Type of map mapping nodes to vertex descriptors.
   typedef std::map<RAGNode, vertex_descr_type> node_to_vertex_map_type;

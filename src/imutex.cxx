@@ -1,3 +1,7 @@
+#include "lockmgr/config.hxx"
+
+#if defined (WIN32)
+
 #include "lockmgr/imutex.hxx"
 
 
@@ -8,3 +12,6 @@ IMutexLock::~IMutexLock ()
 { }
 
 } // namespace lockmgr
+
+
+#endif // defined (WIN32)

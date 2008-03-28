@@ -1,4 +1,9 @@
-#include "lockmgr/internal/syncprim.hxx"
+#include "lockmgr/config.hxx"
+
+#if defined (WIN32)
+
+#include "lockmgr/internal/syncprim_windows.hxx"
+
 
 namespace lockmgr
 {
@@ -39,6 +44,7 @@ Handle::operator Handle::boolean_type () const
     else
         return 0;
 }
+
 
 //
 SyncPrimitive::~SyncPrimitive ()
@@ -173,6 +179,8 @@ Mutex::unlock () const
 }
 
 } // namespace lockmgr
+
+#endif // defined (WIN32)
 
 
 // Local Variables:

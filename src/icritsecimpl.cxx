@@ -1,3 +1,7 @@
+#include "lockmgr/config.hxx"
+
+#if defined (WIN32)
+
 #include "lockmgr/internal/lockmgr.hxx"
 #include "lockmgr/internal/windows.h"
 
@@ -39,3 +43,5 @@ LockManager::crit_forget (CRITICAL_SECTION * cs)
 }
 
 } // namespace lockmgr
+
+#endif // defined (WIN32)

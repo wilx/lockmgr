@@ -1,3 +1,7 @@
+#include "lockmgr/config.hxx"
+
+#if defined (WIN32)
+
 #include <cassert>
 #include "lockmgr/internal/windows.h"
 #include "lockmgr/internal/lockmgr.hxx"
@@ -61,3 +65,5 @@ LockManager::mutex_forget (HANDLE mutex)
 }
 
 } // namespace lockmgr
+
+#endif // defined (WIN32)

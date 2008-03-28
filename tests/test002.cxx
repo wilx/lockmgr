@@ -39,10 +39,12 @@ DWORD WINAPI thread1_proc (LPVOID)
     }
   catch (lockmgr::cycle_found_exception const & e)
     {
-      e;
+      (void)e;
       thread1_throwed = true;
       std::cerr << "Thread 1 throwed.\n";
     }
+
+  return 0;
 }
 
 
@@ -64,13 +66,16 @@ DWORD WINAPI thread2_proc (LPVOID)
     }
   catch (lockmgr::cycle_found_exception const & e)
     {
-      e;
+      (void)e;
       thread2_throwed = true;
       std::cerr << "Thread 2 throwed.\n";
     }
+  
+  return 0;
 }
 
 } // namespace
+
 
 BOOST_AUTO_TEST_CASE (test_deadlock)
 {
