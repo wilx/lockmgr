@@ -10,7 +10,7 @@ namespace
 {
 
 //! \brief DFS visitor that throws \c cycle_found_exception when it
-//! encounters backedge in resource allocation graph.
+//! encounters back edge in resource allocation graph.
 struct dfs_visitor
   : public boost::default_dfs_visitor
 { 
@@ -156,7 +156,7 @@ LockManager::finish_locking (vertex_descr_type tv, vertex_descr_type rv,
   // Remove the thread -> resource edge added few lines above.
   boost::remove_edge (edge, rag);
 
-  // Add new edge resource -> thread for acquired resouce.
+  // Add new edge resource -> thread for acquired resource.
   boost::add_edge (rv, tv, rag);
 }
 

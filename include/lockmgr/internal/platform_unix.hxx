@@ -30,7 +30,7 @@ extern PthreadMutex thread_id_mutex;
 extern thread_id_type thread_id_counter;
 
 
-//! \brief Enum specifiying distinct categories of values of
+//! \brief Enum specifying distinct categories of values of
 //! primitives/resources stored in \c generic_sync_prim_type.
 enum land_of_resource_type
   {

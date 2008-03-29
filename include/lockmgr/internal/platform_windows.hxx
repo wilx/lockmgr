@@ -16,7 +16,7 @@ typedef DWORD thread_id_type;
 typedef std::less<thread_id_type> thread_id_lt;
 
 
-//! \brief Enum specifiying distinct categories of values of
+//! \brief Enum specifying distinct categories of values of
 //! primitives/resources stored in \c generic_sync_prim_type.
 enum land_of_resource_type
   {
