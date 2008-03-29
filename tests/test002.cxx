@@ -34,13 +34,13 @@
 #include <iostream>
 #include <boost/test/auto_unit_test.hpp>
 
-#include "lockmgr/internal/lockmgr.hxx"
+#include "lockmgr/lockmgr.hxx"
 
 
 namespace 
 {
 
-lockmgr::LockManager mgr;
+lockmgr::ILockMgr * mgr;
 lockmgr::IMutexLock * mi;
  
 volatile bool thread1_throwed = false;
@@ -108,7 +108,8 @@ DWORD WINAPI thread2_proc (LPVOID)
 
 BOOST_AUTO_TEST_CASE (test_deadlock)
 {
-  BOOST_REQUIRE ((mi = mgr.get_mutex_lockmgr_if ()));
+  BOOST_REQUIRE ((mgr = lockmgr::get_lock_manager ()));
+  BOOST_REQUIRE ((mi = mgr->get_mutex_lockmgr_if ()));
   
   BOOST_REQUIRE ((mtx1 = ::CreateMutex (0, false, TEXT ("mtx1"))));
   BOOST_REQUIRE ((mtx2 = ::CreateMutex (0, false, TEXT ("mtx2"))));

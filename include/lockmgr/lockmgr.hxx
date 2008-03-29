@@ -26,40 +26,16 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include "lockmgr/config.hxx"
+#if ! defined (LOCKMANAGER_LOCKMGR_LOCKMGR_HXX)
+#define LOCKMANAGER_LOCKMGR_LOCKMGR_HXX
 
-#define BOOST_AUTO_TEST_MAIN
-#include <boost/test/auto_unit_test.hpp>
+#include "lockmgr/ilockmgr.hxx"
 
-#include "lockmgr/lockmgr.hxx"
-
-namespace
+namespace lockmgr
 {
 
-lockmgr::ILockMgr * lm = 0;
+LOCKMGR_INTERFACE ILockMgr * get_lock_manager ();
 
-}
+} // namespace lockmgr
 
-BOOST_AUTO_TEST_CASE (test_instantiation)
-{
-  BOOST_REQUIRE ((lm = lockmgr::get_lock_manager ()));
-}
-
-
-BOOST_AUTO_TEST_CASE (test_interface_getters)
-{
-
-#if defined (WIN32) || defined (__CYGWIN__)
-
-  BOOST_CHECK (lm->get_mutex_lockmgr_if ());
-  BOOST_CHECK (lm->get_critsec_lockmgr_if ());
-
-#endif // defined (WIN32) || defined (__CYGWIN__)
-
-#if defined (LOCKMANAGER_UNIX)
-
-  BOOST_CHECK (lm->get_pthread_mutex_lockmgr_if ());
-
-#endif // defined (LOCKMANAGER_UNIX)
-
-}
+#endif // LOCKMANAGER_LOCKMGR_LOCKMGR_HXX

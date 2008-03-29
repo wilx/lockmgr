@@ -35,13 +35,13 @@
 #include <pthread.h>
 #include <boost/test/auto_unit_test.hpp>
 
-#include "lockmgr/internal/lockmgr.hxx"
+#include "lockmgr/lockmgr.hxx"
 
 
 namespace 
 {
 
-lockmgr::LockManager mgr;
+lockmgr::ILockMgr * mgr;
 lockmgr::IPthreadMutexLock * mi;
 
  
@@ -123,7 +123,8 @@ thread2_proc (void *)
 
 BOOST_AUTO_TEST_CASE (test_deadlock_pthread)
 {
-  BOOST_REQUIRE ((mi = mgr.get_pthread_mutex_lockmgr_if ()));
+  BOOST_REQUIRE ((mgr = lockmgr::get_lock_manager ()));
+  BOOST_REQUIRE ((mi = mgr->get_pthread_mutex_lockmgr_if ()));
   
   BOOST_REQUIRE (::pthread_mutex_init (&mtx1, 0) == 0);
   BOOST_REQUIRE (::pthread_mutex_init (&mtx2, 0) == 0);

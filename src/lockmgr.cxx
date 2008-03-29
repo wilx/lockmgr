@@ -26,10 +26,10 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include "lockmgr/internal/lockmgr.hxx"
 #include <utility>
 #include <boost/graph/depth_first_search.hpp>
-
+#include "lockmgr/internal/lockmgr.hxx"
+#include "lockmgr/lockmgr.hxx"
 
 namespace lockmgr
 {
@@ -250,6 +250,17 @@ LockManager::forget_thread (thread_id_type tid)
   
   tv = find_vertex (rag_thread_node);
   boost::remove_vertex (tv, rag);
+}
+
+
+static LockManager lockmgr_instance;
+
+
+//
+ILockMgr * 
+get_lock_manager ()
+{
+  return &lockmgr_instance;
 }
 
 
