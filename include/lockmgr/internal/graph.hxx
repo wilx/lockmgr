@@ -1,6 +1,14 @@
 #if ! defined (LOCKMANAGER_LOCKMGR_INTERNAL_GRAPH_HXX)
 #define LOCKMANAGER_LOCKMGR_INTERNAL_GRAPH_HXX
 
+// The following hunk basically does #undef min after including
+// <windows.h>. That fixes compilation failure in implementation files
+// of std::vector<bool> that use std::min() which otherwise gets
+// substitued and thus fails to compile.
+#if defined (WIN32)
+#include "lockmgr/internal/windows.h"
+#endif
+
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/properties.hpp>
 #include "lockmgr/internal/nodes.hxx"
