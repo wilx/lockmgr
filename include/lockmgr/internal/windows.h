@@ -5,8 +5,10 @@
 // source. We use this header to include windows.h and undefine such
 // conflicting macros.
 
+#define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 
+#undef WIN32_LEAN_AND_MEAN
 #undef min
 #undef max
 
