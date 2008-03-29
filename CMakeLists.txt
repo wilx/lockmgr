@@ -2,6 +2,9 @@ PROJECT (lockmgr)
 CMAKE_MINIMUM_REQUIRED (VERSION 2.4)
 SET (CMAKE_VERBOSE_MAKEFILE on)
 
+FIND_PACKAGE (Threads)
+MESSAGE (STATUS "Threads: ${CMAKE_THREAD_LIBS_INIT}")
+
 FIND_PACKAGE (Boost)
 INCLUDE_DIRECTORIES ("include" ${Boost_INCLUDE_DIRS})
 LINK_DIRECTORIES (${Boost_LIBRARY_DIRS})
@@ -15,6 +18,7 @@ FILE (GLOB lockmgr_sources src/*.cxx)
 MESSAGE (STATUS "Source files: ${lockmgr_sources} ${lockmgr_headers}")
 
 ADD_LIBRARY (lockmgr SHARED ${lockmgr_sources} ${lockmgr_headers})
+TARGET_LINK_LIBRARIES (lockmgr ${CMAKE_THREAD_LIBS_INIT})
 SET_TARGET_PROPERTIES (lockmgr PROPERTIES
   VERSION "1"
   SOVERSION "1")
@@ -31,4 +35,5 @@ ENDIF (CYGWIN)
 
 FILE (GLOB test_sources tests/*.cxx)
 ADD_EXECUTABLE (test EXCLUDE_FROM_ALL ${test_sources})
-TARGET_LINK_LIBRARIES (test lockmgr ${boost_test_exec_monitor_lib})
+TARGET_LINK_LIBRARIES (test lockmgr ${boost_test_exec_monitor_lib} 
+		      ${CMAKE_THREAD_LIBS_INIT})

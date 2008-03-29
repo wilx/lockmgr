@@ -21,6 +21,7 @@ PthreadMutex::PthreadMutex ()
 PthreadMutex::~PthreadMutex ()
 {
     int ret = ::pthread_mutex_destroy (m_handle);
+    // We cannot (should not) throw from dtor.
     assert (ret == 0);
 }
 

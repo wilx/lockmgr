@@ -113,13 +113,16 @@ public:
     bool lock (unsigned timeout = INFINITE)
     {
 	assert (m_prim);
-	return m_prim->lock (timeout);
+	assert (! m_locked);
+	return m_locked = m_prim->lock (timeout);
     }
 
     void unlock ()
     {
 	assert (m_prim);
+	assert (m_locked);
 	m_prim->unlock ();
+	m_locked = false;
     }
     
 private:

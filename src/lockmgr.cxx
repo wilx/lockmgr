@@ -9,7 +9,8 @@ namespace lockmgr
 namespace
 {
 
-//! 
+//! \brief DFS visitor that throws \c cycle_found_exception when it
+//! encounters backedge in resource allocation graph.
 struct dfs_visitor
   : public boost::default_dfs_visitor
 { 

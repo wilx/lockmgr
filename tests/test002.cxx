@@ -1,8 +1,9 @@
+#include "lockmgr/config.hxx"
+
 #if defined (WIN32) || defined (__CYGWIN__)
 
 #include <windows.h>
 #include <iostream>
-#define BOOST_TEST_MODULE mutex_deadlock
 #include <boost/test/auto_unit_test.hpp>
 
 #include "lockmgr/internal/lockmgr.hxx"

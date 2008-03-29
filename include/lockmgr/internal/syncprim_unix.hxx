@@ -72,7 +72,7 @@ public:
     explicit UnixLockGuard (Primitive const & prim)
         : m_prim (&prim), m_locked (false)
     {
-        m_prim->lock ();
+	lock ();
     }
 
     ~UnixLockGuard ()
@@ -99,14 +99,17 @@ public:
     void lock ()
     {
 	assert (m_prim);
+	assert (! m_locked);
 	m_prim->lock ();
-	
+	m_locked = true;
     }
 
     void unlock ()
     {
 	assert (m_prim);
+	assert (m_locked);
 	m_prim->unlock ();
+	m_locked = false;
     }
     
 private:
