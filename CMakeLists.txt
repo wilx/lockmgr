@@ -5,6 +5,7 @@ SET (CMAKE_VERBOSE_MAKEFILE on)
 #
 # Globals.
 #
+
 SET (lockmgr_version_major 0)
 SET (lockmgr_version_minor 1)
 SET (lockmgr_version_patch 0)
@@ -56,6 +57,7 @@ TARGET_LINK_LIBRARIES (test lockmgr ${boost_test_exec_monitor_lib}
 #
 # CPack configuration.
 #
+
 INCLUDE (InstallRequiredSystemLibraries)
 SET (CPACK_PACKAGE_DESCRIPTION_SUMMARY "Lock manager")
 SET (CPACK_PACKAGE_VENDOR "wilx")
