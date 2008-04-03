@@ -253,7 +253,7 @@ LockManager::forget_thread (thread_id_type tid)
 }
 
 
-static LockManager lockmgr_instance;
+LockManager lockmgr_instance;
 
 
 //

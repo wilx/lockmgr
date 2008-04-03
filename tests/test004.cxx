@@ -33,16 +33,14 @@
 #include <sys/select.h>
 #include <iostream>
 #include <pthread.h>
+#include <errno.h>
 #include <boost/test/auto_unit_test.hpp>
 
-#include "lockmgr/lockmgr.hxx"
+#include "lockmgr/clockmgr.h"
 
 
 namespace 
 {
-
-lockmgr::ILockMgr * mgr;
-lockmgr::IPthreadMutexLock * mi;
 
  
 volatile bool thread1_throwed = false;
@@ -61,32 +59,34 @@ xsleep (unsigned timeout)
   tv.tv_usec = timeout * 1000;
   select (0, 0, 0, 0, &tv);
 }
+
+
+#define CHECK(x)				\
+  if ((x) == EDEADLK)				\
+    goto deadlock;
   
 
 void * 
 thread1_proc (void *)
 {
-  try
+  for (size_t i = 0; i < 2 && ! thread2_throwed; ++i)
     {
-      for (size_t i = 0; i < 2 && ! thread2_throwed; ++i)
-	{
-	  mi->pthread_mutex_lock (&mtx1);
-	  xsleep (30);
-	  mi->pthread_mutex_lock (&mtx2);
-	  xsleep (30);
-	  mi->pthread_mutex_unlock (&mtx2);
-	  xsleep (30);
-	  mi->pthread_mutex_unlock (&mtx1);
-	  xsleep (30);
-	}
-    }
-  catch (lockmgr::cycle_found_exception const & e)
-    {
-      (void)e;
-      thread1_throwed = true;
-      std::cerr << "Thread 1 throwed.\n";
+      CHECK (::lockmgr_pthread_mutex_lock (&mtx1));
+      xsleep (50);
+      CHECK (::lockmgr_pthread_mutex_lock (&mtx2));
+      xsleep (50);
+      ::lockmgr_pthread_mutex_unlock (&mtx2);
+      xsleep (50);
+      ::lockmgr_pthread_mutex_unlock (&mtx1);
+      xsleep (50);
     }
 
+  BOOST_CHECK (thread2_throwed);
+  return 0;
+
+ deadlock:
+  thread1_throwed = true;
+  std::cerr << "Thread 1 throwed.\n";
   return 0;
 }
 
@@ -94,40 +94,34 @@ thread1_proc (void *)
 void * 
 thread2_proc (void *)
 {
-  try
+  for (size_t i = 0; i < 2 && ! thread1_throwed; ++i)
     {
-      for (size_t i = 0; i < 2 && ! thread1_throwed; ++i)
-	{
-	  mi->pthread_mutex_lock (&mtx2);
-	  xsleep (50);
-	  mi->pthread_mutex_lock (&mtx1);
-	  xsleep (50);
-	  mi->pthread_mutex_unlock (&mtx1);
-	  xsleep (50);
-	  mi->pthread_mutex_unlock (&mtx2);
-	  xsleep (50);
-	}
-    }
-  catch (lockmgr::cycle_found_exception const & e)
-    {
-      (void)e;
-      thread2_throwed = true;
-      std::cerr << "Thread 2 throwed.\n";
+      CHECK (::lockmgr_pthread_mutex_lock (&mtx2));
+      xsleep (50);
+      CHECK (::lockmgr_pthread_mutex_lock (&mtx1));
+      xsleep (50);
+      ::lockmgr_pthread_mutex_unlock (&mtx1);
+      xsleep (50);
+      ::lockmgr_pthread_mutex_unlock (&mtx2);
+      xsleep (50);
     }
   
+  BOOST_CHECK (thread1_throwed);
+  return 0;
+
+ deadlock:
+  thread2_throwed = true;
+  std::cerr << "Thread 2 throwed.\n";
   return 0;
 }
 
 } // namespace
 
 
-BOOST_AUTO_TEST_CASE (test_deadlock_pthread)
+BOOST_AUTO_TEST_CASE (test_deadlock_pthread_c)
 {
-  std::cerr << ">> test_deadlock_pthread <<\n";
+  std::cerr << ">> test_deadlock_pthread_c <<\n";
 
-  BOOST_REQUIRE ((mgr = lockmgr::get_lock_manager ()));
-  BOOST_REQUIRE ((mi = mgr->get_pthread_mutex_lockmgr_if ()));
-  
   BOOST_REQUIRE (::pthread_mutex_init (&mtx1, 0) == 0);
   BOOST_REQUIRE (::pthread_mutex_init (&mtx2, 0) == 0);
 

@@ -202,6 +202,11 @@ private:
   LockManager & operator = (LockManager const &);
 };
 
+
+//! Global instance of LockManager.
+extern LockManager lockmgr_instance;
+
+
 } // namespace lockmgr
 
 #endif // LOCKMANAGER_LOCKMGR_INTERNAL_LOCKMGR_HXX

@@ -28,6 +28,7 @@
 
 #include "lockmgr/config.hxx"
 
+#include <iostream>
 #define BOOST_AUTO_TEST_MAIN
 #include <boost/test/auto_unit_test.hpp>
 
@@ -42,12 +43,15 @@ lockmgr::ILockMgr * lm = 0;
 
 BOOST_AUTO_TEST_CASE (test_instantiation)
 {
+  std::cerr << ">> test_instantiation <<\n";
+
   BOOST_REQUIRE ((lm = lockmgr::get_lock_manager ()));
 }
 
 
 BOOST_AUTO_TEST_CASE (test_interface_getters)
 {
+  std::cerr << ">> test_interface_getters <<\n";
 
 #if defined (WIN32) || defined (__CYGWIN__)
 

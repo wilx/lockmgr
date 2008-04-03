@@ -89,4 +89,29 @@ LockManager::pthread_mutex_forget (pthread_mutex_t * mutex)
 
 } // namespace lockmgr
 
+
+// Implementation of C style interfaces for Pthreads mutex.
+
+
+//! C style interface to \c LockManager::pthread_mutex_lock.
+extern "C" int lockmgr_pthread_mutex_lock (pthread_mutex_t * mutex)
+{
+  try
+    {
+      return lockmgr::lockmgr_instance.pthread_mutex_lock (mutex);
+    }
+  catch (lockmgr::cycle_found_exception const &)
+    {
+      return EDEADLK;
+    }
+}
+
+
+//! C style interface to \c LockManager::pthread_mutex_unlock.
+extern "C" int lockmgr_pthread_mutex_unlock (pthread_mutex_t * mutex)
+{
+  return lockmgr::lockmgr_instance.pthread_mutex_unlock (mutex);
+}
+
+
 #endif // defined (LOCKMANAGER_UNIX)
