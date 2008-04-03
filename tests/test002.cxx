@@ -108,7 +108,7 @@ DWORD WINAPI thread2_proc (LPVOID)
 
 BOOST_AUTO_TEST_CASE (test_deadlock_win32_mutex)
 {
-  std::cerr << ">> test_deadlock <<\n";
+  std::cerr << ">> test_deadlock_win32_mutex <<\n";
 
   BOOST_REQUIRE ((mgr = lockmgr::get_lock_manager ()));
   BOOST_REQUIRE ((mi = mgr->get_mutex_lockmgr_if ()));
