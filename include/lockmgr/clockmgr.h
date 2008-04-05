@@ -32,6 +32,12 @@
 #include "lockmgr/config.hxx"
 #include "lockmgr/dlldef.hxx"
 
+#if defined (WIN32) || defined (__CYGWIN__)
+
+#include <windows.h>
+
+#endif // defined (WIN32) || defined (__CYGWIN__)
+
 #if defined (LOCKMANAGER_UNIX)
 
 #include <pthread.h>
@@ -39,12 +45,28 @@
 #endif // defined (LOCKMANAGER_UNIX)
 
 
+#if defined (__cplusplus)
+extern "C"
+{
+#endif // defined (__cplusplus)
+
+#if defined (WIN32) || defined (__CYGWIN__)
+
+LOCKMGR_INTERFACE DWORD LockMgrMutexLock (HANDLE mutex);
+LOCKMGR_INTERFACE DWORD LockMgrMutexUnlock (HANDLE mutex);
+
+#endif // defined (WIN32) || defined (__CYGWIN__)
+
 #if defined (LOCKMANAGER_UNIX)
 
-extern "C" LOCKMGR_INTERFACE int lockmgr_pthread_mutex_lock (pthread_mutex_t * mutex);
-extern "C" LOCKMGR_INTERFACE int lockmgr_pthread_mutex_unlock (pthread_mutex_t * mutex);
+LOCKMGR_INTERFACE int lockmgr_pthread_mutex_lock (pthread_mutex_t * mutex);
+LOCKMGR_INTERFACE int lockmgr_pthread_mutex_unlock (pthread_mutex_t * mutex);
 
 #endif // defined (LOCKMANAGER_UNIX)
+
+#if defined (__cplusplus)
+}
+#endif // defined (__cplusplus)
 
 
 #endif // LOCKMANAGER_LOCKMGR_CLOCKMGR_H

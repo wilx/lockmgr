@@ -94,7 +94,9 @@ LockManager::pthread_mutex_forget (pthread_mutex_t * mutex)
 
 
 //! C style interface to \c LockManager::pthread_mutex_lock.
-extern "C" int lockmgr_pthread_mutex_lock (pthread_mutex_t * mutex)
+extern "C" 
+int 
+lockmgr_pthread_mutex_lock (pthread_mutex_t * mutex)
 {
   try
     {
@@ -108,7 +110,9 @@ extern "C" int lockmgr_pthread_mutex_lock (pthread_mutex_t * mutex)
 
 
 //! C style interface to \c LockManager::pthread_mutex_unlock.
-extern "C" int lockmgr_pthread_mutex_unlock (pthread_mutex_t * mutex)
+extern "C" 
+int 
+lockmgr_pthread_mutex_unlock (pthread_mutex_t * mutex)
 {
   return lockmgr::lockmgr_instance.pthread_mutex_unlock (mutex);
 }

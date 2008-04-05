@@ -94,4 +94,30 @@ LockManager::mutex_forget (HANDLE mutex)
 
 } // namespace lockmgr
 
+
+//! C style interface to \c LockManager::mutex_lock.
+extern "C"
+DWORD 
+LockMgrMutexLock (HANDLE mutex)
+{
+  try
+    {
+      return lockmgr::lockmgr_instance.mutex_lock (mutex);
+    }
+  catch (lockmgr::cycle_found_exception const &)
+    {
+      return WAIT_FAILED;
+    }
+}
+
+
+//! C style interface to \c LockManager::mutex_unlock.
+extern "C"
+DWORD
+LockMgrMutexUnlock (HANDLE mutex)
+{
+  return lockmgr::lockmgr_instance.mutex_unlock (mutex);
+}
+
+
 #endif // defined (WIN32)
