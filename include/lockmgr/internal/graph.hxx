@@ -121,11 +121,6 @@ struct RAGNodeGetColorVisitor
 };
 
 
-} // namespace lockmgr
-
-namespace boost
-{
-
 //! \brief Put() function for property_map interface of
 //! lockmgr::RAGColorMap.
 inline 
@@ -133,9 +128,9 @@ void
 put (lockmgr::RAGColorMap & map, lockmgr::RAGColorMap::key_type vertex,
      lockmgr::RAGColorMap::value_type color)
 {
-  lockmgr::RAGNode node (get (vertex_name, map.rag, vertex));
+  lockmgr::RAGNode node (get (boost::vertex_name, map.rag, vertex));
   apply_visitor (lockmgr::RAGNodeSetColorVisitor (color), node);
-  put (vertex_name, map.rag, vertex, node);
+  put (boost::vertex_name, map.rag, vertex, node);
 }
 
 
@@ -145,11 +140,12 @@ inline
 lockmgr::RAGColorMap::value_type
 get (lockmgr::RAGColorMap const & map, lockmgr::RAGColorMap::key_type vertex)
 {
-  lockmgr::RAGNode const & node = get (vertex_name, map.rag, vertex);
+  lockmgr::RAGNode const & node = get (boost::vertex_name, map.rag, vertex);
   return static_cast<lockmgr::RAGColorMap::value_type>
     (apply_visitor (lockmgr::RAGNodeGetColorVisitor (), node));
 }
 
-} // namespace boost
+
+} // namespace lockmgr
 
 #endif // LOCKMANAGER_LOCKMGR_INTERNAL_GRAPH_HXX
